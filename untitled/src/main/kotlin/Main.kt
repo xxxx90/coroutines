@@ -3,10 +3,7 @@
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.sun.security.ntlm.Client
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import java.beans.BeanDescriptor
@@ -36,9 +33,11 @@ with(CoroutineScope(EmptyCoroutineContext)) {
     launch {
         try {
             val posts = getPosts(client)
-                .map {post ->
-                    PostWithComment(post, getComments(client, post.id))
+                .map { post ->
+                    async {
+                        PostWithComment(post, getComments(client, post.id))
                     }
+                }.awaitAll()
             println(posts)
         } catch (e: Exception){
             e.printStackTrace()

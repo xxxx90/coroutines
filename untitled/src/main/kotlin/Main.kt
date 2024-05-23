@@ -35,7 +35,7 @@ with(CoroutineScope(EmptyCoroutineContext)) {
             val posts = getPosts(client)
                 .map { post ->
                     async {
-                        PostWithComment(post, getComments(client, post.id))
+                        PostWithComment(post,getAuthor(client, post.authorId), getComments(client, post.id))
                     }
                 }.awaitAll()
             println(posts)
@@ -125,6 +125,6 @@ data class Author(
     val avatar: String,
 )
 
-class PostWithComment(post: Post, comments: List<Comment>) {
+class PostWithComment(post: Post, author: Author, comments: List<Comment>) {
 
 }
